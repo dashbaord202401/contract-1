@@ -2,8 +2,10 @@
 pragma solidity 0.8.21;
 
 import {ERC721AUpgradeable} from "erc721a-upgradeable/contracts/ERC721AUpgradeable.sol";
+import {IVRC25} from "./interfaces/IVRC25.sol";
 
 contract Album is ERC721AUpgradeable {
+    IVRC25 public CUSD = IVRC25(0xb3008E7156Ae2312b49B5200C3E1C3e80E529feb);
     string private _baseTokenURI;
     uint256 public ALBUM_PRICE;
 
