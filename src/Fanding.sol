@@ -5,21 +5,23 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ERC721A} from "erc721a/contracts/ERC721A.sol";
 
 contract Fanding is Ownable, ERC721A {
-    uint256 private _price;
+    uint256 public price;
     string private _baseTokenURI;
 
     constructor() Ownable(msg.sender) ERC721A("Album", "ALBUM") {}
 
     function mint(uint256 quantity) external payable {
-        _mint(msg.sender, quantity);
+        pay(quantity);
+        _safeMint(msg.sender, quantity);
     }
 
-    function price() internal view returns (uint256 memory) {
-        return _price;
+    function pay(uint256 quantity) private {
+        (bool success, ) = owner().call{value: price * quantity}("");
+        require(success, "Failed to send Ether");
     }
 
-    function setPrice(uint256 calldata price) external onlyOwner {
-        _price = price;
+    function setPrice(uint256 _price) external onlyOwner {
+        price = _price;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -37,6 +39,6 @@ contract Fanding is Ownable, ERC721A {
     function getOwnershipData(
         uint256 tokenId
     ) external view returns (TokenOwnership memory) {
-        return ownershipOf(tokenId);
+        return _ownershipOf(tokenId);
     }
 }
