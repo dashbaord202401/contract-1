@@ -19,10 +19,16 @@ contract Fanding is Ownable, ERC1155 {
     constructor() Ownable(msg.sender) ERC1155("") {}
 
     // Buy & Withdraw function
-    function buyAlbum(uint256 quantity) public {
+    function buyAlbum(uint256 quantity) public payable {
         _mint(msg.sender, ALBUM_ID, quantity, "");
-        (bool sent, ) = address(this).call{value: ALBUM_PRICE * quantity}("");
-        require(sent, "Failed to send Ether");
+        refundIfOver(ALBUM_PRICE * quantity);
+    }
+
+    function refundIfOver(uint256 price) private {
+        require(msg.value >= price, "Need to send more ETH.");
+        if (msg.value > price) {
+            payable(msg.sender).transfer(msg.value - price);
+        }
     }
 
     function withdraw() external onlyOwner {
