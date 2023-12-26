@@ -5,6 +5,7 @@ libs = ["lib"]
 remappings = [
     "erc721a=node_modules/erc721a/",
     "erc721a-upgradeable=node_modules/erc721a-upgradeable",
+    "solady=lib/solady/",
 ]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
