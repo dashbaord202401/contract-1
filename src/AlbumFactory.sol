@@ -20,11 +20,8 @@ contract AlbumFactory {
         uint256 albumPrice_
     ) public returns (address) {
         address album = Clones.clone(impl);
-
         IAlbumV1(album).initialize(name_, symbol_, baseURI_, albumPrice_);
-
         emit ReleasedAlbum(album);
-
         return album;
     }
 }
