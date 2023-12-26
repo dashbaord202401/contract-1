@@ -10,19 +10,19 @@ contract Fanding is Ownable, ERC1155 {
     string private _symbol = "ALBUM";
 
     // Price storage
-    uint256 public price;
+    uint256 public ALBUM_PRICE = 1 ether;
 
     // Defaut tokenId is `1`
-    uint256 public constant ALBUM = 1;
+    uint256 public constant ALBUM_ID = 1;
 
     // Consturctor
     constructor() Ownable(msg.sender) ERC1155("") {}
 
     // Buy & Withdraw function
     function buyAlbum(uint256 quantity) public {
-        _mint(msg.sender, ALBUM, quantity, "");
-        (bool success, ) = owner().call{value: price * quantity}("");
-        require(success, "Failed to send Ether");
+        _mint(msg.sender, ALBUM_ID, quantity, "");
+        (bool sent, ) = address(this).call{value: ALBUM_PRICE * quantity}("");
+        require(sent, "Failed to send Ether");
     }
 
     function withdraw() external onlyOwner {
@@ -40,10 +40,6 @@ contract Fanding is Ownable, ERC1155 {
     }
 
     // Setting function
-    function setPrice(uint256 newPrice) external onlyOwner {
-        price = newPrice;
-    }
-
     function setTokenUri(string calldata newUri) external onlyOwner {
         _setURI(newUri);
     }
