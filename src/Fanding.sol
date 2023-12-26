@@ -12,15 +12,12 @@ contract Fanding is Ownable, ERC1155 {
     // Price storage
     uint256 public ALBUM_PRICE = 1 ether;
 
-    // Defaut tokenId is `1`
-    uint256 public constant ALBUM_ID = 1;
-
     // Consturctor
     constructor() Ownable(msg.sender) ERC1155("") {}
 
     // Buy & Withdraw function
-    function buyAlbum(uint256 quantity) public payable {
-        _mint(msg.sender, ALBUM_ID, quantity, "");
+    function buyAlbum(uint256 id, uint256 quantity) public payable {
+        _mint(msg.sender, id, quantity, "");
         refundIfOver(ALBUM_PRICE * quantity);
     }
 
@@ -48,13 +45,5 @@ contract Fanding is Ownable, ERC1155 {
     // Setting function
     function setTokenUri(string calldata newUri) external onlyOwner {
         _setURI(newUri);
-    }
-
-    function setNameAndSymbol(
-        string calldata _newName,
-        string calldata _newSymbol
-    ) external onlyOwner {
-        _name = _newName;
-        _symbol = _newSymbol;
     }
 }
