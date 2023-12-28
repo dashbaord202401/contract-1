@@ -3,7 +3,7 @@ src = "src"
 out = "out"
 libs = ["lib"]
 remappings = [
-    "erc721a=node_modules/erc721a/",
+    "erc721a=node_modules/erc721a/contracts/",
     "erc721a-upgradeable=node_modules/erc721a-upgradeable",
     "solady=lib/solady/",
 ]

@@ -1,51 +1,47 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.21;
 
+import {ERC721A} from "erc721a/ERC721A.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Fanding is Ownable, ERC1155 {
-    // Metadata storage
-    string private _name = "Album";
-    string private _symbol = "ALBUM";
+error InsufficientPayment();
 
-    // Token storage
-    IERC20 public CUSD;
+contract Fanding is ERC721A, Ownable {
+    uint256 public price = 1 ether;
+    string public baseTokenURI;
 
-    // Price storage
-    uint256 public price = 10;
+    constructor(
+        string memory name,
+        string memory symbol
+    ) ERC721A(name, symbol) Ownable(msg.sender) {}
 
-    // Consturctor
-    constructor() Ownable(msg.sender) ERC1155("") {}
+    function purchase(uint256 quantity) external payable {
+        if (msg.value < quantity * price) revert InsufficientPayment();
 
-    // Buy & Withdraw function
-    function buyAlbum(uint256 id, uint256 quantity) public {
-        CUSD.transfer(owner(), price);
-        _mint(msg.sender, id, quantity, "");
+        _mint(msg.sender, quantity);
     }
 
-    // Metadata function
-    function name() public view returns (string memory) {
-        return _name;
-    }
-
-    function symbol() public view returns (string memory) {
-        return _symbol;
-    }
-
-    // Setting function
-    function setTokenUri(string calldata newUri) external onlyOwner {
-        _setURI(newUri);
-    }
-
-    // Set token address
-    function setTokenAddr(address addr) public onlyOwner {
-        CUSD = IERC20(addr);
-    }
-
-    // Set price
-    function setPrice(uint256 newPrice) public onlyOwner {
+    function setPrice(uint256 newPrice) external onlyOwner {
         price = newPrice;
+    }
+
+    function setBaseURI(string calldata baseURI) external onlyOwner {
+        baseTokenURI = baseURI;
+    }
+
+    function _baseURI() internal view override returns (string memory) {
+        return baseTokenURI;
+    }
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view override returns (string memory) {
+        if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
+
+        string memory baseURI = _baseURI();
+        return
+            bytes(baseURI).length != 0
+                ? string(abi.encodePacked(baseURI, _toString(tokenId), ".json"))
+                : "";
     }
 }
